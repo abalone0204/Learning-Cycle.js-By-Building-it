@@ -14,7 +14,19 @@ function main(sources) {
         .startWith(null)
         .flatMapLatest(() =>
             Observable.timer(0, 1000)
-            .map(i => `Seconds elapsed ${i}`)
+            .map(i => {
+                return {
+                    tagName: "H1",
+                    children: [
+                    {
+                        tagName: 'SPAN',
+                        children: [
+                        `Seconds elapsed ${i}`
+                        ]
+                    }
+                    ]
+                }
+            })
         ), 
         Log: Observable.timer(0, 2000)
             .map(i => 2 * i)
@@ -23,10 +35,26 @@ function main(sources) {
 }
 
 // Effects
-function DOMDriver(text$) {
-    text$.subscribe(text => {
+
+function createElement(obj) {
+    const element = document.createElement(obj.tagName);
+    obj.children
+            .filter(c => typeof c === 'object')
+            .map(createElement)
+            .forEach(c => element.appendChild(c));
+        obj.children
+            .filter(c => typeof c === 'string')
+            .forEach(c => element.innerHTML += c);
+    return element;
+}
+
+function DOMDriver(obj$) {
+    obj$.subscribe(obj => {
         const container = document.querySelector('#app');
-        container.textContent = text;
+        const element = createElement(obj)
+
+        container.innerHTML = '';
+        container.appendChild(element);
     })
     const DOMSource = Observable.fromEvent(document, "click");
     return DOMSource

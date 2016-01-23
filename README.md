@@ -8,7 +8,16 @@
 
 - Learn how to build a simplified version of Circle.
 
-- I keep the simplified version of cycle in `mySimpleCycle.js`.
+- Check the on-line course on [egghead.io](https://egghead.io/series/cycle-js-fundamentals)
 
+> The Course is by @andrestaltz, who created the Cycle.js
 
+- This repo is the practice project while learning on it.
 
+## Note
+
+- I also wrote a note about how I learn from this tutorial in Chinese
+
+    - [做中學 Cycle.js（一）](http://abalone0204.github.io/#/posts/cycle-js-basic)
+
+- Simplified version of cycle is in `mySimpleCycle.js`.
