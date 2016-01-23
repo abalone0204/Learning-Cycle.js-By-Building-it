@@ -8,5 +8,7 @@
 
 - Learn how to build a simplified version of Circle.
 
+- I keep the simplified version of cycle in `mySimpleCycle.js`.
+
 
 

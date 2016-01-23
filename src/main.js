@@ -1,13 +1,15 @@
 require('../static/stylesheets/style.scss');
+import Cycle from '@cycle/core';
 import {
     Observable, Subject
 }
 from "rx";
 
 
-function main(DOMSource) {
-    const click$ = DOMSource;
-    return {
+// Logics
+function main(sources) {
+    const click$ = sources.DOM;
+    const sinks = {
         DOM: click$
         .startWith(null)
         .flatMapLatest(() =>
@@ -17,8 +19,10 @@ function main(DOMSource) {
         Log: Observable.timer(0, 2000)
             .map(i => 2 * i)
     }
+    return sinks;
 }
 
+// Effects
 function DOMDriver(text$) {
     text$.subscribe(text => {
         const container = document.querySelector('#app');
@@ -32,20 +36,11 @@ function consoleLogDriver(msg$) {
     msg$.subscribe(msg => console.log(msg));
 }
 
-function run(mainFn, drivers) {
-    const proxyDOMSource = new Subject();
-    const sinks = mainFn(proxyDOMSource);
-    const DOMSource = drivers.DOM(sinks.DOM);
-    DOMSource.subscribe(click => proxyDOMSource.onNext(click))
-        // Object.keys(drivers)
-        // .forEach(key => {
-        //     drivers[key](sinks[key])
-        // })
-}
+
 
 const drivers = {
     DOM: DOMDriver,
     Log: consoleLogDriver,
 }
 
-run(main, drivers);
+Cycle.run(main, drivers);

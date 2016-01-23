@@ -41,6 +41,8 @@
     "cz-conventional-changelog": "^1.1.4"
   },
   "dependencies": {
+    "@cycle/core": "^6.0.0",
+    "@cycle/dom": "^9.0.1",
     "jquery": "^2.1.4",
     "rx": "^4.0.7"
   },
