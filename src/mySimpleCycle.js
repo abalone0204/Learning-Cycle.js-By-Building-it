@@ -1,3 +1,4 @@
+import {Subject} from "rx";
 function run(mainFn, drivers) {
     const proxySources = {};
     Object.keys(drivers).forEach(key =>{
@@ -10,7 +11,8 @@ function run(mainFn, drivers) {
             if(source) source.subscribe(x => proxySources[key].onNext(x));
           })
 }
+const mySimpleCycle ={
+    run
+};
 
-export default mySimpleCycle = {
-    run 
-}
+export default mySimpleCycle;
