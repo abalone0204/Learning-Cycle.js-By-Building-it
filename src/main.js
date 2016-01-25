@@ -1,38 +1,52 @@
 require('../static/stylesheets/style.scss');
 import Cycle from '@cycle/core';
 import {
-    button, p, label, div, makeDOMDriver
+    h1, h4, button, a, div, makeDOMDriver
 }
 from '@cycle/dom';
+import {
+    makeHTTPDriver
+}
+from '@cycle/http';
 
 import Rx from "rx";
 
+const API_URL = 'https://api.github.com/users/abalone0204';
+
 function main(sources) {
-    const decrementClick$ = sources.DOM
-        .select('#decrement').events('click');
-    const incrementClick$ = sources.DOM
-        .select('#increment').events('click');
-    const decrementAction$ = decrementClick$.map(ev => -1);
-    const incrementAction$ = incrementClick$.map(ev => 1);
-    const number$ = Rx.Observable.of(0)
-        .merge(decrementAction$)
-        .merge(incrementAction$)
-        .scan((prev, cur) => prev+cur);
+    const clickEv$ = sources.DOM
+        .select('.get_user').events('click');
+    const request$ = clickEv$.map(_ => {
+        return {
+            url: API_URL,
+            method: 'GET',
+        }
+    })
+    const response$$ = sources.HTTP
+        .filter(response$ => response$.request.url === API_URL)
+    const response$ = response$$.switch();
+    const firstUser$ = response$.map(res => res.body)
+    .startWith({});
     return {
-        DOM: number$.map(number =>
+        DOM: firstUser$.map(user =>
             div([
-                button('#decrement', 'Decrement'),
-                button('#increment', 'Increment'),
-                p([
-                    label(String(number))
+                button('.get_user', ['Get user']),
+                div('.user_details', [
+                    h1('.user_name', user.name),
+                    h4('.email', user.email),
+                    a('.web', {
+                        href: user.url
+                    }, user.url)
                 ])
             ])
-        )
+        ),
+        HTTP: request$
     }
 }
 
 const drivers = {
     DOM: makeDOMDriver('#app'),
+    HTTP: makeHTTPDriver()
 }
 
 Cycle.run(main, drivers);
