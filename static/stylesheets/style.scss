@@ -1,12 +1,15 @@
-$sudo_green:#50e2c2;
-$deep_blue:#23263a;
+$sudo_green: #50e2c2;
+$deep_blue: #23263a;
+
 h1, p {
     color: $sudo_green;
     text-align: center;
 }
-body{
+
+body {
     background: $deep_blue;
 }
+
 #app {
     position: absolute;
     left: 50%;
@@ -14,9 +17,11 @@ body{
     text-align: center;
     color: $sudo_green;
     font-size: 50px;
+
     hr {
         color: #b1b1b1;
     }
+
     input {
         opacity: 0.4;
         margin-left: 15px;
@@ -26,14 +31,19 @@ body{
         height: 100%;
         background: transparent;
         border: none;
-         outline: none;
-        color:$sudo_green;
+        outline: none;
+        color: $sudo_green;
         border-bottom: $sudo_green solid 2px;
         height: 50px;
         transition: opacity 0.5s ease;
         padding-bottom: 15px;
-        &:focus{
+
+        &:focus {
             opacity: 1;
         }
+    }
+
+    input[type='range'] {
+        padding: 0;
     }
 }

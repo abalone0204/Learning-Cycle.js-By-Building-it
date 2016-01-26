@@ -1,7 +1,7 @@
 require('../static/stylesheets/style.scss');
 import Cycle from '@cycle/core';
 import {
-    h1, h4, button, a, div, makeDOMDriver
+    input, label, h1, h4, button, a, div, makeDOMDriver
 }
 from '@cycle/dom';
 import {
@@ -14,33 +14,44 @@ import Rx from "rx";
 const API_URL = 'https://api.github.com/users/abalone0204';
 
 function main(sources) {
-    const clickEv$ = sources.DOM
-        .select('.get_user').events('click');
-    const request$ = clickEv$.map(_ => {
-        return {
-            url: API_URL,
-            method: 'GET',
-        }
-    })
-    const response$$ = sources.HTTP
-        .filter(response$ => response$.request.url === API_URL)
-    const response$ = response$$.switch();
-    const firstUser$ = response$.map(res => res.body)
-    .startWith({});
+    const changeWeight$ = sources.DOM.select('.weight').events('input')
+        .map(ev => ev.target.value).startWith(70);
+    const changeHeight$ = sources.DOM.select('.height').events('input')
+        .map(ev => ev.target.value).startWith(170);
+    const state$ = Rx.Observable.combineLatest(
+        changeWeight$,
+        changeHeight$, (weight, height) => {
+            const heightM = height/100;
+            const bmi = Math.round(weight / (heightM * heightM));
+            return {
+                bmi, weight, height
+            }
+        })
     return {
-        DOM: firstUser$.map(user =>
+        DOM: state$.map(state =>
             div([
-                button('.get_user', ['Get user']),
-                div('.user_details', [
-                    h1('.user_name', user.name),
-                    h4('.email', user.email),
-                    a('.web', {
-                        href: user.url
-                    }, user.url)
-                ])
+                div([
+                    label(`Weight: ${state.weight}kg`),
+                    input('.weight', {
+                        type: 'range',
+                        min: 40,
+                        max: 150,
+                        value: state.weight
+                    })
+                ]),
+                div([
+                    label(`Height: ${state.height}cm`),
+                    input('.height', {
+                        type: 'range',
+                        min: 140,
+                        max: 250,
+                        value: state.height
+                    })
+
+                ]),
+                h1(`BMI is ${state.bmi}`)
             ])
-        ),
-        HTTP: request$
+        )
     }
 }
 
