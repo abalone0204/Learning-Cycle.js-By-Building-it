@@ -11,13 +11,15 @@ from '@cycle/http';
 
 import Rx from "rx";
 
-const API_URL = 'https://api.github.com/users/abalone0204';
-
-function main(sources) {
-    const changeWeight$ = sources.DOM.select('.weight').events('input')
+function intent (DOMSource) {
+    const changeWeight$ = DOMSource.select('.weight').events('input')
         .map(ev => ev.target.value).startWith(70);
-    const changeHeight$ = sources.DOM.select('.height').events('input')
+    const changeHeight$ = DOMSource.select('.height').events('input')
         .map(ev => ev.target.value).startWith(170);
+    return {changeWeight$,changeHeight$};
+}
+
+function model(changeWeight$, changeHeight$) {
     const state$ = Rx.Observable.combineLatest(
         changeWeight$,
         changeHeight$, (weight, height) => {
@@ -27,8 +29,11 @@ function main(sources) {
                 bmi, weight, height
             }
         })
-    return {
-        DOM: state$.map(state =>
+    return state$;
+}
+
+function view(state$) {
+    const vtree$ = state$.map(state =>
             div([
                 div([
                     label(`Weight: ${state.weight}kg`),
@@ -52,12 +57,19 @@ function main(sources) {
                 h1(`BMI is ${state.bmi}`)
             ])
         )
+    return vtree$;
+}
+function main(sources) {
+    const {changeWeight$,changeHeight$} = intent(sources.DOM);
+    const state$ = model(changeWeight$, changeHeight$);
+    const vtree$ = view(state$);
+    return {
+        DOM: vtree$
     }
 }
 
 const drivers = {
-    DOM: makeDOMDriver('#app'),
-    HTTP: makeHTTPDriver()
+    DOM: makeDOMDriver('#app')
 }
 
 Cycle.run(main, drivers);
