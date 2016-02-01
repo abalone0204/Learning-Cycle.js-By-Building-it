@@ -54,6 +54,7 @@ function LabelSlider(sources) {
     const vtree$ = view(state$);
     return {
         DOM: vtree$,
+        value: state$.map(state=> state.value)
     }
 }
 
@@ -71,6 +72,8 @@ function main(sources) {
         props: weightProps$
     });
     const weightVtree$ = weightSinks$.DOM;
+    const weightValue$ = weightSinks$.value;
+
     const heightProps$ = Rx.Observable.of({
         label: 'Height',
         unit: 'cm',
@@ -84,11 +87,17 @@ function main(sources) {
         props: heightProps$
     });
     const heightVtree$ = heightSinks$.DOM;
-    
-    const vtree$ = Rx.Observable.combineLatest(weightVtree$, heightVtree$, (weightVtree, heightVtree) =>
+    const heightValue$ = heightSinks$.value;
+    const bmi$ = Rx.Observable.combineLatest(weightValue$, heightValue$, (weight, height) => {
+        const heightMeters = height * 0.01;
+        const bmi = Math.round(weight/(heightMeters*heightMeters))
+        return bmi;
+    });
+    const vtree$ = Rx.Observable.combineLatest(bmi$, weightVtree$, heightVtree$, (bmi, weightVtree, heightVtree) =>
         div([
             weightVtree,
-            heightVtree
+            heightVtree,
+            h1(`BMI is: ${bmi}`)
         ]))
     return {
         DOM: vtree$
