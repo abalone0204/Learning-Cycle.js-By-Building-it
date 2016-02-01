@@ -18,6 +18,10 @@
 
 - I also wrote a note about how I learn from this tutorial in Chinese
 
-    - [做中學 Cycle.js（一）](http://abalone0204.github.io/#/posts/cycle-js-basic)
+    - [做中學 Cycle.js（上）](http://abalone0204.github.io/#/posts/cycle-js-basic)
+
+    - [做中學 Cycle.js（中）](http://abalone0204.github.io/#/posts/circle-js-2)
+
+    - [做中學 Cycle.js（下）](http://abalone0204.github.io/#/posts/circle-js-3)
 
 - Simplified version of cycle is in `mySimpleCycle.js`.
